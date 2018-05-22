@@ -25,4 +25,6 @@ public interface NewsService {
     NewsDTO update(NewsDTO newsDTO) throws NotFoundException;
 
     NewsDTO findGeneralNewsById(long newsId) throws NotFoundException, LogicException;
+
+    void deleteById(long newsId) throws NotFoundException;
 }

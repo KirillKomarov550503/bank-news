@@ -62,7 +62,7 @@ public class NewsServiceImpl implements NewsService {
         List<News> resultCollection = clientNewsRepository.findAll()
                 .stream()
                 .filter(clientNews -> clientNews.getClientId() == clientId
-                        || clientNews.getClientId() == 0L)
+                        || clientNews.getClientId() == 0)
                 .map(clientNews -> newsRepository.findById(clientNews.getNewsId()).get())
                 .collect(Collectors.toList());
         logger.info("Return all client news By client ID");
@@ -117,15 +117,16 @@ public class NewsServiceImpl implements NewsService {
                 logger.error(error);
                 throw new LogicException(error);
             }
-            if (clientIds.isEmpty()) {
-                if (isAbsentInDatabase(0L, newsId)) {
+            if (isAbsentInDatabase(0L, newsId)) {
+                if (clientIds.isEmpty()) {
                     clientNewsRepository.save(new ClientNews(0L, newsId));
+                } else {
+                    clientIds.stream()
+                            .filter(clientId -> isAbsentInDatabase(clientId, newsId))
+                            .forEach(clientId -> clientNewsRepository.save(new ClientNews(clientId, newsId)));
                 }
-            } else {
-                clientIds.stream()
-                        .filter(clientId -> isAbsentInDatabase(clientId, newsId))
-                        .forEach(clientId -> clientNewsRepository.save(new ClientNews(clientId, newsId)));
             }
+            logger.info("Send new to clients");
         } else {
             String error = "There is no such news in database";
             logger.error(error);
@@ -154,6 +155,7 @@ public class NewsServiceImpl implements NewsService {
         return newsConverter.convertToDTO(resNews);
     }
 
+    @Transactional
     @Override
     public NewsDTO findGeneralNewsById(long newsId) throws NotFoundException, LogicException {
         Optional<News> optionalNews = newsRepository.findById(newsId);
@@ -170,6 +172,25 @@ public class NewsServiceImpl implements NewsService {
             logger.error(error);
             throw new NotFoundException(error);
         }
+        logger.info("Return news");
         return newsConverter.convertToDTO(news);
+    }
+
+    @Transactional
+    @Override
+    public void deleteById(long newsId) throws NotFoundException {
+        Optional<News> optionalNews = newsRepository.findById(newsId);
+        if (optionalNews.isPresent()) {
+            News news = optionalNews.get();
+            if (news.getNewsStatus().equals(NewsStatus.CLIENT)) {
+                clientNewsRepository.deleteClientNewsByNewsId(newsId);
+            }
+            newsRepository.deleteById(newsId);
+            logger.info("Delete news");
+        } else {
+            String error = "No such news";
+            logger.error(error);
+            throw new NotFoundException(error);
+        }
     }
 }

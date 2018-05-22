@@ -7,6 +7,7 @@ import com.netcracker.komarov.news.service.exception.LogicException;
 import com.netcracker.komarov.news.service.exception.NotFoundException;
 import com.netcracker.komarov.news.service.json.NewsJson;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,7 +35,7 @@ public class NewsController {
     }
 
     @ApiOperation(value = "Selecting all client news by client ID")
-    @RequestMapping(value = "/client/{clientId}/news", method = RequestMethod.GET)
+    @RequestMapping(value = "/clients/{clientId}/news", method = RequestMethod.GET)
     public ResponseEntity getAllClientNewsById(@PathVariable long clientId) {
         ResponseEntity responseEntity;
         try {
@@ -53,19 +54,7 @@ public class NewsController {
         return ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
     }
 
-    @ApiOperation(value = "Selecting news by ID")
-    @RequestMapping(value = "/admins/news/{newsId}", method = RequestMethod.GET)
-    public ResponseEntity findById(@PathVariable long newsId) {
-        ResponseEntity responseEntity;
-        try {
-            NewsDTO dto = newsService.findById(newsId);
-            responseEntity = ResponseEntity.status(HttpStatus.OK).body(new NewsJson(dto));
-        } catch (NotFoundException e) {
-            responseEntity = getNotFoundResponseEntity(e.getMessage());
-        }
-        return responseEntity;
-    }
-
+    @ApiOperation(value = "Select news by ID")
     @RequestMapping(value = "/news/{newsId}", method = RequestMethod.GET)
     public ResponseEntity findGeneralNewsById(@PathVariable long newsId) {
         ResponseEntity responseEntity;
@@ -76,6 +65,19 @@ public class NewsController {
             responseEntity = getNotFoundResponseEntity(e.getMessage());
         } catch (LogicException e) {
             responseEntity = ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        }
+        return responseEntity;
+    }
+
+    @ApiOperation(value = "Selecting news by ID")
+    @RequestMapping(value = "/admins/news/{newsId}", method = RequestMethod.GET)
+    public ResponseEntity findById(@PathVariable long newsId) {
+        ResponseEntity responseEntity;
+        try {
+            NewsDTO dto = newsService.findById(newsId);
+            responseEntity = ResponseEntity.status(HttpStatus.OK).body(new NewsJson(dto));
+        } catch (NotFoundException e) {
+            responseEntity = getNotFoundResponseEntity(e.getMessage());
         }
         return responseEntity;
     }
@@ -121,6 +123,19 @@ public class NewsController {
             requestNewsDTO.setId(newsId);
             NewsDTO dto = newsService.update(requestNewsDTO);
             responseEntity = ResponseEntity.status(HttpStatus.OK).body(new NewsJson(dto));
+        } catch (NotFoundException e) {
+            responseEntity = getNotFoundResponseEntity(e.getMessage());
+        }
+        return responseEntity;
+    }
+
+    @ApiOperation(value = "Delete news by ID")
+    @RequestMapping(value = "/admins/news/{newsId}", method = RequestMethod.DELETE)
+    public ResponseEntity deleteById(@PathVariable long newsId) {
+        ResponseEntity responseEntity;
+        try {
+            newsService.deleteById(newsId);
+            responseEntity = ResponseEntity.status(HttpStatus.OK).build();
         } catch (NotFoundException e) {
             responseEntity = getNotFoundResponseEntity(e.getMessage());
         }
