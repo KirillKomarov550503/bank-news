@@ -1,0 +1,19 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/microservice_bank_news
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: qwerty
+    platform: POSTGRESQL
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: false
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        temp:
+          use_jdbc_metadata_defaults: false
+server:
+  port: 8081

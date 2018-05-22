@@ -1,0 +1,16 @@
+tmp
+.classpath
+.project
+.idea
+*.iml
+/.idea/
+.checkstyle
+build
+target
+bin
+.settings
+out
+/build
+/target/
+META-INF/
+
