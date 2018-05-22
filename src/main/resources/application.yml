@@ -15,5 +15,8 @@ spring:
         enable_lazy_load_no_trans: true
         temp:
           use_jdbc_metadata_defaults: false
+  output:
+    ansi:
+      enabled: always
 server:
   port: 8081
