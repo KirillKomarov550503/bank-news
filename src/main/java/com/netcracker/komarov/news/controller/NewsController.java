@@ -5,9 +5,7 @@ import com.netcracker.komarov.news.service.NewsService;
 import com.netcracker.komarov.news.service.dto.entity.NewsDTO;
 import com.netcracker.komarov.news.service.exception.LogicException;
 import com.netcracker.komarov.news.service.exception.NotFoundException;
-import com.netcracker.komarov.news.service.json.NewsJson;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +28,7 @@ public class NewsController {
     public ResponseEntity add(@PathVariable long adminId, @RequestBody NewsDTO newsDTO) {
         ResponseEntity responseEntity;
         NewsDTO dto = newsService.addNews(newsDTO, adminId);
-        responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(new NewsJson(dto));
+        responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(dto);
         return responseEntity;
     }
 
@@ -60,7 +58,7 @@ public class NewsController {
         ResponseEntity responseEntity;
         try {
             NewsDTO dto = newsService.findGeneralNewsById(newsId);
-            responseEntity = ResponseEntity.status(HttpStatus.OK).body(new NewsJson(dto));
+            responseEntity = ResponseEntity.status(HttpStatus.OK).body(dto);
         } catch (NotFoundException e) {
             responseEntity = getNotFoundResponseEntity(e.getMessage());
         } catch (LogicException e) {
@@ -75,7 +73,7 @@ public class NewsController {
         ResponseEntity responseEntity;
         try {
             NewsDTO dto = newsService.findById(newsId);
-            responseEntity = ResponseEntity.status(HttpStatus.OK).body(new NewsJson(dto));
+            responseEntity = ResponseEntity.status(HttpStatus.OK).body(dto);
         } catch (NotFoundException e) {
             responseEntity = getNotFoundResponseEntity(e.getMessage());
         }
@@ -106,7 +104,7 @@ public class NewsController {
         ResponseEntity responseEntity;
         try {
             NewsDTO dto = newsService.addClientNews(clientIds, newsId);
-            responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(new NewsJson(dto));
+            responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(dto);
         } catch (NotFoundException e) {
             responseEntity = getNotFoundResponseEntity(e.getMessage());
         } catch (LogicException e) {
@@ -122,7 +120,7 @@ public class NewsController {
         try {
             requestNewsDTO.setId(newsId);
             NewsDTO dto = newsService.update(requestNewsDTO);
-            responseEntity = ResponseEntity.status(HttpStatus.OK).body(new NewsJson(dto));
+            responseEntity = ResponseEntity.status(HttpStatus.OK).body(dto);
         } catch (NotFoundException e) {
             responseEntity = getNotFoundResponseEntity(e.getMessage());
         }
@@ -150,7 +148,7 @@ public class NewsController {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception);
     }
 
-    private NewsJson[] convertToArray(Collection<NewsDTO> dtos) {
-        return dtos.stream().map(NewsJson::new).toArray(NewsJson[]::new);
+    private NewsDTO[] convertToArray(Collection<NewsDTO> dtos) {
+        return dtos.toArray(new NewsDTO[0]);
     }
 }
