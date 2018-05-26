@@ -1,10 +1,13 @@
 package com.netcracker.komarov.news.service.dto.entity;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.io.Serializable;
 import java.util.Objects;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class NewsDTO implements Serializable {
-    private long id;
+    private Long id;
 
     private String date;
 
@@ -17,7 +20,7 @@ public class NewsDTO implements Serializable {
     public NewsDTO() {
     }
 
-    public NewsDTO(long id, String date, String title, String text, String status) {
+    public NewsDTO(Long id, String date, String title, String text, String status) {
         this.id = id;
         this.date = date;
         this.title = title;
@@ -25,11 +28,11 @@ public class NewsDTO implements Serializable {
         this.status = status;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -70,7 +73,7 @@ public class NewsDTO implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         NewsDTO newsDTO = (NewsDTO) o;
-        return id == newsDTO.id &&
+        return Objects.equals(id, newsDTO.id) &&
                 Objects.equals(date, newsDTO.date) &&
                 Objects.equals(title, newsDTO.title) &&
                 Objects.equals(text, newsDTO.text) &&

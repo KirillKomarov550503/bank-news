@@ -17,7 +17,6 @@ public class NewsConverter implements Converter<NewsDTO, News> {
             newsDTO.setDate(news.getDate());
             newsDTO.setText(news.getText());
             newsDTO.setTitle(news.getTitle());
-            newsDTO.setStatus(news.getNewsStatus().toString());
         }
         return newsDTO;
     }
@@ -27,7 +26,6 @@ public class NewsConverter implements Converter<NewsDTO, News> {
         News news = new News();
         news.setTitle(dto.getTitle());
         news.setText(dto.getText());
-        news.setDate(dto.getDate());
         String status = dto.getStatus().toLowerCase();
         if (status.equals("client")) {
             news.setNewsStatus(NewsStatus.CLIENT);

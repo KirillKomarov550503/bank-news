@@ -5,6 +5,7 @@ import com.netcracker.komarov.news.service.NewsService;
 import com.netcracker.komarov.news.service.dto.entity.NewsDTO;
 import com.netcracker.komarov.news.service.exception.LogicException;
 import com.netcracker.komarov.news.service.exception.NotFoundException;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ public class NewsController {
         this.newsService = newsService;
     }
 
+    @ApiOperation(value = "Creation of new news")
     @RequestMapping(value = "/admins/{adminId}/news", method = RequestMethod.POST)
     public ResponseEntity add(@PathVariable long adminId, @RequestBody NewsDTO newsDTO) {
         ResponseEntity responseEntity;
@@ -31,6 +33,7 @@ public class NewsController {
         return responseEntity;
     }
 
+    @ApiOperation(value = "Selecting all client news by client ID")
     @RequestMapping(value = "/clients/{clientId}/news", method = RequestMethod.GET)
     public ResponseEntity getAllClientNewsById(@PathVariable long clientId) {
         ResponseEntity responseEntity;
@@ -43,12 +46,14 @@ public class NewsController {
         return responseEntity;
     }
 
+    @ApiOperation(value = "Selecting all general news")
     @RequestMapping(value = "/news", method = RequestMethod.GET)
     public ResponseEntity findAllGeneralNews() {
         Collection<NewsDTO> dtos = newsService.getAllNewsByStatus(NewsStatus.GENERAL);
         return ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
     }
 
+    @ApiOperation(value = "Select news by ID")
     @RequestMapping(value = "/news/{newsId}", method = RequestMethod.GET)
     public ResponseEntity findGeneralNewsById(@PathVariable long newsId) {
         ResponseEntity responseEntity;
@@ -63,6 +68,7 @@ public class NewsController {
         return responseEntity;
     }
 
+    @ApiOperation(value = "Selecting news by ID")
     @RequestMapping(value = "/admins/news/{newsId}", method = RequestMethod.GET)
     public ResponseEntity findById(@PathVariable long newsId) {
         ResponseEntity responseEntity;
@@ -75,6 +81,7 @@ public class NewsController {
         return responseEntity;
     }
 
+    @ApiOperation(value = "Selecting all news by status")
     @RequestMapping(value = "/admins/news", method = RequestMethod.GET)
     public ResponseEntity getCollection(@RequestParam(name = "filter",
             required = false, defaultValue = "false") boolean filter, @RequestParam(name = "client",
@@ -94,6 +101,7 @@ public class NewsController {
         return ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
     }
 
+    @ApiOperation(value = "Sending news to clients")
     @RequestMapping(value = "/admins/news/{newsId}", method = RequestMethod.POST)
     public ResponseEntity sendNewsToClients(@PathVariable long newsId, @RequestBody Collection<Long> clientIds) {
         ResponseEntity responseEntity;
@@ -108,6 +116,7 @@ public class NewsController {
         return responseEntity;
     }
 
+    @ApiOperation(value = "Remarking news")
     @RequestMapping(value = "/admins/news/{newsId}", method = RequestMethod.PUT)
     public ResponseEntity update(@RequestBody NewsDTO requestNewsDTO, @PathVariable long newsId) {
         ResponseEntity responseEntity;
@@ -121,6 +130,7 @@ public class NewsController {
         return responseEntity;
     }
 
+    @ApiOperation(value = "Delete news by ID")
     @RequestMapping(value = "/admins/news/{newsId}", method = RequestMethod.DELETE)
     public ResponseEntity deleteById(@PathVariable long newsId) {
         ResponseEntity responseEntity;
