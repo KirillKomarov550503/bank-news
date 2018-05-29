@@ -28,7 +28,7 @@ public class NewsServiceImpl implements NewsService {
     private NewsRepository newsRepository;
     private NewsConverter newsConverter;
     private ClientNewsRepository clientNewsRepository;
-    private Logger logger = LoggerFactory.getLogger(NewsServiceImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(NewsServiceImpl.class);
 
     @Autowired
     public NewsServiceImpl(NewsRepository newsRepository, NewsConverter newsConverter,
@@ -51,21 +51,21 @@ public class NewsServiceImpl implements NewsService {
 
     @Transactional
     @Override
-    public Collection<NewsDTO> getAllNews() {
-        logger.info("Return all news");
+    public Collection<NewsDTO> findAllNews() {
+        LOGGER.info("Return all news");
         return convertCollection(newsRepository.findAll());
     }
 
     @Transactional
     @Override
-    public Collection<NewsDTO> getAllClientNewsById(long clientId) throws NotFoundException {
+    public Collection<NewsDTO> findAllNewsByClientId(long clientId) throws NotFoundException {
         List<News> resultCollection = clientNewsRepository.findAll()
                 .stream()
                 .filter(clientNews -> clientNews.getClientId() == clientId
                         || clientNews.getClientId() == 0)
                 .map(clientNews -> newsRepository.findById(clientNews.getNewsId()).get())
                 .collect(Collectors.toList());
-        logger.info("Return all client news By client ID");
+        LOGGER.info("Return all client news by client ID: " + clientId);
         return convertCollection(resultCollection);
     }
 
@@ -76,10 +76,10 @@ public class NewsServiceImpl implements NewsService {
         News news;
         if (optional.isPresent()) {
             news = optional.get();
-            logger.info("Return client news by ID");
+            LOGGER.info("Return client news by ID: " + newsId);
         } else {
-            String error = "There is no such news in database";
-            logger.error(error);
+            String error = "There is no such news in database with ID: " + newsId;
+            LOGGER.error(error);
             throw new NotFoundException(error);
         }
         return newsConverter.convertToDTO(news);
@@ -87,34 +87,34 @@ public class NewsServiceImpl implements NewsService {
 
     @Transactional
     @Override
-    public NewsDTO addNews(NewsDTO newsDTO, long adminId) {
+    public NewsDTO save(NewsDTO newsDTO, long adminId) {
         News news = newsConverter.convertToEntity(newsDTO);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm");
         news.setDate(simpleDateFormat.format(new Date()));
         News temp;
         news.setAdminId(adminId);
         temp = newsRepository.save(news);
-        logger.info("Add new news to database");
+        LOGGER.info("Add new news to database with ID: " + temp.getId());
         return newsConverter.convertToDTO(temp);
     }
 
     @Transactional
     @Override
-    public Collection<NewsDTO> getAllNewsByStatus(NewsStatus newsStatus) {
-        logger.info("Return all news by status");
+    public Collection<NewsDTO> findAllNewsByStatus(NewsStatus newsStatus) {
+        LOGGER.info("Return all news by status: " + newsStatus);
         return convertCollection(newsRepository.findNewsByNewsStatus(newsStatus));
     }
 
     @Transactional
     @Override
-    public NewsDTO addClientNews(Collection<Long> clientIds, long newsId) throws NotFoundException, LogicException {
+    public NewsDTO sendNewsToClient(Collection<Long> clientIds, long newsId) throws NotFoundException, LogicException {
         Optional<News> optionalNews = newsRepository.findById(newsId);
         News news;
         if (optionalNews.isPresent()) {
             news = optionalNews.get();
             if (news.getNewsStatus().equals(NewsStatus.GENERAL)) {
                 String error = "Try to send general news to clients";
-                logger.error(error);
+                LOGGER.error(error);
                 throw new LogicException(error);
             }
             if (isAbsentInDatabase(0L, newsId)) {
@@ -126,10 +126,10 @@ public class NewsServiceImpl implements NewsService {
                             .forEach(clientId -> clientNewsRepository.save(new ClientNews(clientId, newsId)));
                 }
             }
-            logger.info("Send new to clients");
+            LOGGER.info("Send new to clients");
         } else {
-            String error = "There is no such news in database";
-            logger.error(error);
+            String error = "There is no such news in database with ID: " + newsId;
+            LOGGER.error(error);
             throw new NotFoundException(error);
         }
         return newsConverter.convertToDTO(news);
@@ -146,10 +146,10 @@ public class NewsServiceImpl implements NewsService {
             oldNews.setTitle(newNews.getTitle());
             oldNews.setText(newNews.getText());
             resNews = newsRepository.saveAndFlush(oldNews);
-            logger.info("News was edited by admin");
+            LOGGER.info("News with ID " + resNews.getId() + " was edited by admin");
         } else {
-            String error = "There is no such news in database";
-            logger.error(error);
+            String error = "There is no such news in database with ID " + newsDTO.getId();
+            LOGGER.error(error);
             throw new NotFoundException(error);
         }
         return newsConverter.convertToDTO(resNews);
@@ -164,15 +164,15 @@ public class NewsServiceImpl implements NewsService {
             news = optionalNews.get();
             if (news.getNewsStatus().equals(NewsStatus.CLIENT)) {
                 String error = "You do not have access to this news";
-                logger.error(error);
+                LOGGER.error(error);
                 throw new LogicException(error);
             }
         } else {
-            String error = "No such news";
-            logger.error(error);
+            String error = "No such news with ID " + newsId;
+            LOGGER.error(error);
             throw new NotFoundException(error);
         }
-        logger.info("Return news");
+        LOGGER.info("Return news with ID " + newsId);
         return newsConverter.convertToDTO(news);
     }
 
@@ -186,10 +186,10 @@ public class NewsServiceImpl implements NewsService {
                 clientNewsRepository.deleteClientNewsByNewsId(newsId);
             }
             newsRepository.deleteById(newsId);
-            logger.info("Delete news");
+            LOGGER.info("Delete news with ID " + newsId);
         } else {
-            String error = "No such news";
-            logger.error(error);
+            String error = "No such news with ID " + newsId;
+            LOGGER.error(error);
             throw new NotFoundException(error);
         }
     }

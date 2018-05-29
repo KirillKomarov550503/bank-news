@@ -26,19 +26,19 @@ public class NewsController {
 
     @ApiOperation(value = "Creation of new news")
     @RequestMapping(value = "/admins/{adminId}/news", method = RequestMethod.POST)
-    public ResponseEntity add(@PathVariable long adminId, @RequestBody NewsDTO newsDTO) {
+    public ResponseEntity save(@PathVariable long adminId, @RequestBody NewsDTO newsDTO) {
         ResponseEntity responseEntity;
-        NewsDTO dto = newsService.addNews(newsDTO, adminId);
+        NewsDTO dto = newsService.save(newsDTO, adminId);
         responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(dto);
         return responseEntity;
     }
 
     @ApiOperation(value = "Selecting all client news by client ID")
     @RequestMapping(value = "/clients/{clientId}/news", method = RequestMethod.GET)
-    public ResponseEntity getAllClientNewsById(@PathVariable long clientId) {
+    public ResponseEntity findAllNewsByClientId(@PathVariable long clientId) {
         ResponseEntity responseEntity;
         try {
-            Collection<NewsDTO> dtos = newsService.getAllClientNewsById(clientId);
+            Collection<NewsDTO> dtos = newsService.findAllNewsByClientId(clientId);
             responseEntity = ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
         } catch (NotFoundException e) {
             responseEntity = ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
@@ -49,7 +49,7 @@ public class NewsController {
     @ApiOperation(value = "Selecting all general news")
     @RequestMapping(value = "/news", method = RequestMethod.GET)
     public ResponseEntity findAllGeneralNews() {
-        Collection<NewsDTO> dtos = newsService.getAllNewsByStatus(NewsStatus.GENERAL);
+        Collection<NewsDTO> dtos = newsService.findAllNewsByStatus(NewsStatus.GENERAL);
         return ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
     }
 
@@ -83,7 +83,7 @@ public class NewsController {
 
     @ApiOperation(value = "Selecting all news by status")
     @RequestMapping(value = "/admins/news", method = RequestMethod.GET)
-    public ResponseEntity getCollection(@RequestParam(name = "filter",
+    public ResponseEntity findNewsByParams(@RequestParam(name = "filter",
             required = false, defaultValue = "false") boolean filter, @RequestParam(name = "client",
             required = false, defaultValue = "false") boolean client, @RequestParam Map<String, Object> params) {
 
@@ -91,12 +91,12 @@ public class NewsController {
         Collection<NewsDTO> dtos;
         if (filter) {
             if (client) {
-                dtos = newsService.getAllNewsByStatus(NewsStatus.CLIENT);
+                dtos = newsService.findAllNewsByStatus(NewsStatus.CLIENT);
             } else {
-                dtos = newsService.getAllNewsByStatus(NewsStatus.GENERAL);
+                dtos = newsService.findAllNewsByStatus(NewsStatus.GENERAL);
             }
         } else {
-            dtos = newsService.getAllNews();
+            dtos = newsService.findAllNews();
         }
         return ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
     }
@@ -106,7 +106,7 @@ public class NewsController {
     public ResponseEntity sendNewsToClients(@PathVariable long newsId, @RequestBody Collection<Long> clientIds) {
         ResponseEntity responseEntity;
         try {
-            NewsDTO dto = newsService.addClientNews(clientIds, newsId);
+            NewsDTO dto = newsService.sendNewsToClient(clientIds, newsId);
             responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(dto);
         } catch (NotFoundException e) {
             responseEntity = getNotFoundResponseEntity(e.getMessage());

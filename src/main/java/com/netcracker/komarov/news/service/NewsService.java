@@ -10,17 +10,17 @@ import java.util.Collection;
 
 @Service
 public interface NewsService {
-    Collection<NewsDTO> getAllClientNewsById(long clientId) throws NotFoundException;
+    Collection<NewsDTO> findAllNewsByClientId(long clientId) throws NotFoundException;
 
     NewsDTO findById(long newsId) throws NotFoundException;
 
-    Collection<NewsDTO> getAllNews();
+    Collection<NewsDTO> findAllNews();
 
-    Collection<NewsDTO> getAllNewsByStatus(NewsStatus newsStatus);
+    Collection<NewsDTO> findAllNewsByStatus(NewsStatus newsStatus);
 
-    NewsDTO addNews(NewsDTO newsDTO, long adminId);
+    NewsDTO save(NewsDTO newsDTO, long adminId);
 
-    NewsDTO addClientNews(Collection<Long> clientIds, long newsId) throws NotFoundException, LogicException;
+    NewsDTO sendNewsToClient(Collection<Long> clientIds, long newsId) throws NotFoundException, LogicException;
 
     NewsDTO update(NewsDTO newsDTO) throws NotFoundException;
 
