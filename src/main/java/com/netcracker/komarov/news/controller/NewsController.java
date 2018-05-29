@@ -5,6 +5,8 @@ import com.netcracker.komarov.news.service.NewsService;
 import com.netcracker.komarov.news.service.dto.entity.NewsDTO;
 import com.netcracker.komarov.news.service.exception.LogicException;
 import com.netcracker.komarov.news.service.exception.NotFoundException;
+import com.netcracker.komarov.news.service.exception.ValidationException;
+import com.netcracker.komarov.news.validator.impl.NewsValidator;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,18 +20,25 @@ import java.util.Map;
 @RequestMapping("/bank/v1")
 public class NewsController {
     private NewsService newsService;
+    private NewsValidator newsValidator;
 
     @Autowired
-    public NewsController(NewsService newsService) {
+    public NewsController(NewsService newsService, NewsValidator newsValidator) {
         this.newsService = newsService;
+        this.newsValidator = newsValidator;
     }
 
     @ApiOperation(value = "Creation of new news")
     @RequestMapping(value = "/admins/{adminId}/news", method = RequestMethod.POST)
     public ResponseEntity save(@PathVariable long adminId, @RequestBody NewsDTO newsDTO) {
         ResponseEntity responseEntity;
-        NewsDTO dto = newsService.save(newsDTO, adminId);
-        responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(dto);
+        try {
+            newsValidator.validate(newsDTO);
+            NewsDTO dto = newsService.save(newsDTO, adminId);
+            responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(dto);
+        } catch (ValidationException e) {
+            responseEntity = getBadRequestResponseEntity(e.getMessage());
+        }
         return responseEntity;
     }
 
@@ -121,11 +130,14 @@ public class NewsController {
     public ResponseEntity update(@RequestBody NewsDTO requestNewsDTO, @PathVariable long newsId) {
         ResponseEntity responseEntity;
         try {
+            newsValidator.validate(requestNewsDTO);
             requestNewsDTO.setId(newsId);
             NewsDTO dto = newsService.update(requestNewsDTO);
             responseEntity = ResponseEntity.status(HttpStatus.OK).body(dto);
         } catch (NotFoundException e) {
             responseEntity = getNotFoundResponseEntity(e.getMessage());
+        } catch (ValidationException e){
+            responseEntity = getBadRequestResponseEntity(e.getMessage());
         }
         return responseEntity;
     }
@@ -143,12 +155,16 @@ public class NewsController {
         return responseEntity;
     }
 
-    private ResponseEntity getNotFoundResponseEntity(String exception) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception);
+    private ResponseEntity getNotFoundResponseEntity(String message) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
     }
 
-    private ResponseEntity getInternalServerErrorResponseEntity(String exception) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exception);
+    private ResponseEntity getInternalServerErrorResponseEntity(String message) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+    }
+
+    private ResponseEntity getBadRequestResponseEntity(String message) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
     }
 
     private NewsDTO[] convertToArray(Collection<NewsDTO> dtos) {
