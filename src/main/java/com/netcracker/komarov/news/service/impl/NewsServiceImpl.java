@@ -5,6 +5,7 @@ import com.netcracker.komarov.news.dao.entity.News;
 import com.netcracker.komarov.news.dao.entity.NewsStatus;
 import com.netcracker.komarov.news.dao.repository.ClientNewsRepository;
 import com.netcracker.komarov.news.dao.repository.NewsRepository;
+import com.netcracker.komarov.news.dao.specification.NewsSpecification;
 import com.netcracker.komarov.news.service.NewsService;
 import com.netcracker.komarov.news.service.dto.converter.imp.NewsConverter;
 import com.netcracker.komarov.news.service.dto.entity.NewsDTO;
@@ -17,10 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -192,5 +190,13 @@ public class NewsServiceImpl implements NewsService {
             LOGGER.error(error);
             throw new NotFoundException(error);
         }
+    }
+
+    @Transactional
+    @Override
+    public Collection<NewsDTO> findAllNewsBySpecification(Map<String, String> params) {
+        Collection<News> newsCollection = newsRepository.findAll(NewsSpecification.findByStatus(params));
+        LOGGER.info("Return all news by specification");
+        return convertCollection(newsCollection);
     }
 }

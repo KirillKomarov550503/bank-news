@@ -92,21 +92,9 @@ public class NewsController {
 
     @ApiOperation(value = "Selecting all news by status")
     @RequestMapping(value = "/admins/news", method = RequestMethod.GET)
-    public ResponseEntity findNewsByParams(@RequestParam(name = "filter",
-            required = false, defaultValue = "false") boolean filter, @RequestParam(name = "client",
-            required = false, defaultValue = "false") boolean client, @RequestParam Map<String, Object> params) {
-
-
-        Collection<NewsDTO> dtos;
-        if (filter) {
-            if (client) {
-                dtos = newsService.findAllNewsByStatus(NewsStatus.CLIENT);
-            } else {
-                dtos = newsService.findAllNewsByStatus(NewsStatus.GENERAL);
-            }
-        } else {
-            dtos = newsService.findAllNews();
-        }
+    public ResponseEntity findNewsByParams(@RequestParam Map<String, String> params) {
+        System.err.println("Params: " + params);
+        Collection<NewsDTO> dtos = newsService.findAllNewsBySpecification(params);
         return ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
     }
 
@@ -136,7 +124,7 @@ public class NewsController {
             responseEntity = ResponseEntity.status(HttpStatus.OK).body(dto);
         } catch (NotFoundException e) {
             responseEntity = getNotFoundResponseEntity(e.getMessage());
-        } catch (ValidationException e){
+        } catch (ValidationException e) {
             responseEntity = getBadRequestResponseEntity(e.getMessage());
         }
         return responseEntity;

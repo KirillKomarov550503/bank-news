@@ -7,9 +7,12 @@ import com.netcracker.komarov.news.service.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Map;
 
 @Service
 public interface NewsService {
+    Collection<NewsDTO> findAllNewsBySpecification(Map<String, String> params);
+
     Collection<NewsDTO> findAllNewsByClientId(long clientId) throws NotFoundException;
 
     NewsDTO findById(long newsId) throws NotFoundException;
