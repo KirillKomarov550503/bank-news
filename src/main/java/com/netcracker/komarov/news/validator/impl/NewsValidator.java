@@ -28,12 +28,16 @@ public class NewsValidator implements Validator<NewsDTO> {
             LOGGER.error(error);
             throw new ValidationException(error);
         }
-        if (newsDTO.getStatus() == null) {
+        validateStatus(newsDTO.getStatus());
+    }
+
+    public void validateStatus(String status) throws ValidationException {
+        if (status == null) {
             String error = "Unknown value for status";
             LOGGER.error(error);
             throw new ValidationException(error);
         }
-        switch (newsDTO.getStatus()) {
+        switch (status.toUpperCase()) {
             case "CLIENT":
                 break;
             case "GENERAL":

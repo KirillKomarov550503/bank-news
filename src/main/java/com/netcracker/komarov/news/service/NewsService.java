@@ -4,6 +4,7 @@ import com.netcracker.komarov.news.dao.entity.NewsStatus;
 import com.netcracker.komarov.news.service.dto.entity.NewsDTO;
 import com.netcracker.komarov.news.service.exception.LogicException;
 import com.netcracker.komarov.news.service.exception.NotFoundException;
+import com.netcracker.komarov.news.service.exception.ValidationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;

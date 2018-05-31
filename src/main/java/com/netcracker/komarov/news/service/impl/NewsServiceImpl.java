@@ -11,6 +11,7 @@ import com.netcracker.komarov.news.service.dto.converter.imp.NewsConverter;
 import com.netcracker.komarov.news.service.dto.entity.NewsDTO;
 import com.netcracker.komarov.news.service.exception.LogicException;
 import com.netcracker.komarov.news.service.exception.NotFoundException;
+import com.netcracker.komarov.news.service.exception.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -194,7 +195,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Transactional
     @Override
-    public Collection<NewsDTO> findAllNewsBySpecification(Map<String, String> params) {
+    public Collection<NewsDTO> findAllNewsBySpecification(Map<String, String> params){
         Collection<News> newsCollection = newsRepository.findAll(NewsSpecification.findByStatus(params));
         LOGGER.info("Return all news by specification");
         return convertCollection(newsCollection);

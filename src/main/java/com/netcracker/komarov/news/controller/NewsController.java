@@ -93,8 +93,15 @@ public class NewsController {
     @ApiOperation(value = "Selecting all news by status")
     @RequestMapping(value = "/admins/news", method = RequestMethod.GET)
     public ResponseEntity findNewsByParams(@RequestParam Map<String, String> params) {
-        Collection<NewsDTO> dtos = newsService.findAllNewsBySpecification(params);
-        return ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
+        ResponseEntity responseEntity;
+        try {
+            newsValidator.validateStatus(params.get("status"));
+            Collection<NewsDTO> dtos = newsService.findAllNewsBySpecification(params);
+            responseEntity = ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
+        } catch (ValidationException e) {
+            responseEntity = getBadRequestResponseEntity(e.getMessage());
+        }
+        return responseEntity;
     }
 
     @ApiOperation(value = "Sending news to clients")
