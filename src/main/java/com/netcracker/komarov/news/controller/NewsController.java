@@ -93,7 +93,6 @@ public class NewsController {
     @ApiOperation(value = "Selecting all news by status")
     @RequestMapping(value = "/admins/news", method = RequestMethod.GET)
     public ResponseEntity findNewsByParams(@RequestParam Map<String, String> params) {
-        System.err.println("Params: " + params);
         Collection<NewsDTO> dtos = newsService.findAllNewsBySpecification(params);
         return ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
     }

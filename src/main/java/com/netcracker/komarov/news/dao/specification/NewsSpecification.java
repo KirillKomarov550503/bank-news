@@ -1,6 +1,7 @@
 package com.netcracker.komarov.news.dao.specification;
 
 import com.netcracker.komarov.news.dao.entity.News;
+import com.netcracker.komarov.news.dao.entity.NewsStatus;
 import org.springframework.data.jpa.domain.Specification;
 
 import javax.persistence.criteria.Predicate;
@@ -15,7 +16,8 @@ public class NewsSpecification {
             Root<News> newsRoot = subquery.from(News.class);
             Predicate predicate;
             predicate = "true".equals(params.get("filter")) ?
-                    criteriaBuilder.equal(newsRoot.get("newsStatus"), params.get("newsStatus")) :
+                    criteriaBuilder.equal(root.get("newsStatus"),
+                            Enum.valueOf(NewsStatus.class, params.get("status").toUpperCase())) :
                     criteriaBuilder.exists(subquery.select(newsRoot));
             return predicate;
         };
