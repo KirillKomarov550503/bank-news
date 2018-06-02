@@ -1,5 +1,6 @@
 package com.netcracker.komarov.news.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netcracker.komarov.news.dao.entity.NewsStatus;
 import com.netcracker.komarov.news.service.NewsService;
 import com.netcracker.komarov.news.service.dto.entity.NewsDTO;
@@ -21,11 +22,13 @@ import java.util.Map;
 public class NewsController {
     private NewsService newsService;
     private NewsValidator newsValidator;
+    private ObjectMapper objectMapper;
 
     @Autowired
-    public NewsController(NewsService newsService, NewsValidator newsValidator) {
+    public NewsController(NewsService newsService, NewsValidator newsValidator, ObjectMapper objectMapper) {
         this.newsService = newsService;
         this.newsValidator = newsValidator;
+        this.objectMapper = objectMapper;
     }
 
     @ApiOperation(value = "Creation of new news")
@@ -150,15 +153,15 @@ public class NewsController {
     }
 
     private ResponseEntity getNotFoundResponseEntity(String message) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(objectMapper.valueToTree(message));
     }
 
     private ResponseEntity getInternalServerErrorResponseEntity(String message) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(objectMapper.valueToTree(message));
     }
 
     private ResponseEntity getBadRequestResponseEntity(String message) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectMapper.valueToTree(message));
     }
 
     private NewsDTO[] convertToArray(Collection<NewsDTO> dtos) {
