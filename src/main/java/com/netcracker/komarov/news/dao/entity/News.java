@@ -1,10 +1,13 @@
 package com.netcracker.komarov.news.dao.entity;
 
+import org.hibernate.annotations.Proxy;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @Table(name = "news")
+@Proxy(lazy = false)
 public class News extends BaseEntity {
 
     @Column(name = "date", length = 20)
