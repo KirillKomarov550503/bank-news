@@ -31,7 +31,7 @@ public class NewsController {
         this.objectMapper = objectMapper;
     }
 
-    @ApiOperation(value = "Creation of new news")
+    @ApiOperation(value = "Create of new news")
     @RequestMapping(value = "/admins/{adminId}/news", method = RequestMethod.POST)
     public ResponseEntity save(@PathVariable long adminId, @RequestBody NewsDTO newsDTO) {
         ResponseEntity responseEntity;
@@ -45,7 +45,7 @@ public class NewsController {
         return responseEntity;
     }
 
-    @ApiOperation(value = "Selecting all client news by client ID")
+    @ApiOperation(value = "Select all client news by client ID")
     @RequestMapping(value = "/clients/{clientId}/news", method = RequestMethod.GET)
     public ResponseEntity findAllNewsByClientId(@PathVariable long clientId) {
         ResponseEntity responseEntity;
@@ -58,7 +58,7 @@ public class NewsController {
         return responseEntity;
     }
 
-    @ApiOperation(value = "Selecting all general news")
+    @ApiOperation(value = "Select all general news")
     @RequestMapping(value = "/news", method = RequestMethod.GET)
     public ResponseEntity findAllGeneralNews() {
         Collection<NewsDTO> dtos = newsService.findAllNewsByStatus(NewsStatus.GENERAL);
@@ -80,7 +80,7 @@ public class NewsController {
         return responseEntity;
     }
 
-    @ApiOperation(value = "Selecting news by ID")
+    @ApiOperation(value = "Select news by ID")
     @RequestMapping(value = "/admins/news/{newsId}", method = RequestMethod.GET)
     public ResponseEntity findById(@PathVariable long newsId) {
         ResponseEntity responseEntity;
@@ -93,7 +93,7 @@ public class NewsController {
         return responseEntity;
     }
 
-    @ApiOperation(value = "Selecting all news by status")
+    @ApiOperation(value = "Select all news by status")
     @RequestMapping(value = "/admins/news", method = RequestMethod.GET)
     public ResponseEntity findNewsByParams(@RequestParam Map<String, String> params) {
         ResponseEntity responseEntity;
@@ -107,7 +107,7 @@ public class NewsController {
         return responseEntity;
     }
 
-    @ApiOperation(value = "Sending news to clients")
+    @ApiOperation(value = "Send news to clients")
     @RequestMapping(value = "/admins/news/{newsId}", method = RequestMethod.POST)
     public ResponseEntity sendNewsToClients(@PathVariable long newsId, @RequestBody Collection<Long> clientIds) {
         ResponseEntity responseEntity;
@@ -122,7 +122,7 @@ public class NewsController {
         return responseEntity;
     }
 
-    @ApiOperation(value = "Remarking news")
+    @ApiOperation(value = "Remark news")
     @RequestMapping(value = "/admins/news/{newsId}", method = RequestMethod.PUT)
     public ResponseEntity update(@RequestBody NewsDTO requestNewsDTO, @PathVariable long newsId) {
         ResponseEntity responseEntity;

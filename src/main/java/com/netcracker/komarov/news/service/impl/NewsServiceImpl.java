@@ -14,6 +14,7 @@ import com.netcracker.komarov.news.service.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@PropertySource("classpath:application-error.properties")
 public class NewsServiceImpl implements NewsService {
     private NewsRepository newsRepository;
     private NewsConverter newsConverter;
