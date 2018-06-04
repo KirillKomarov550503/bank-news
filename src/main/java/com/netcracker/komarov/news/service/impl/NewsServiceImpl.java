@@ -14,6 +14,7 @@ import com.netcracker.komarov.news.service.exception.NotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +28,15 @@ public class NewsServiceImpl implements NewsService {
     private NewsConverter newsConverter;
     private ClientNewsRepository clientNewsRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(NewsServiceImpl.class);
+    private Environment environment;
 
     @Autowired
     public NewsServiceImpl(NewsRepository newsRepository, NewsConverter newsConverter,
-                           ClientNewsRepository clientNewsRepository) {
+                           ClientNewsRepository clientNewsRepository, Environment environment) {
         this.newsRepository = newsRepository;
         this.newsConverter = newsConverter;
         this.clientNewsRepository = clientNewsRepository;
+        this.environment = environment;
     }
 
     private boolean isAbsentInDatabase(long clientId, long newsId) {
@@ -76,7 +79,7 @@ public class NewsServiceImpl implements NewsService {
             news = optional.get();
             LOGGER.info("Return client news by ID: " + newsId);
         } else {
-            String error = "There is no such news in database with ID: " + newsId;
+            String error = environment.getProperty("error.search") + newsId;
             LOGGER.error(error);
             throw new NotFoundException(error);
         }
@@ -124,9 +127,9 @@ public class NewsServiceImpl implements NewsService {
                             .forEach(clientId -> clientNewsRepository.save(new ClientNews(clientId, newsId)));
                 }
             }
-            LOGGER.info("Send new to clients");
+            LOGGER.info("Send news to clients");
         } else {
-            String error = "There is no such news in database with ID: " + newsId;
+            String error = environment.getProperty("error.search") + newsId;
             LOGGER.error(error);
             throw new NotFoundException(error);
         }
@@ -146,7 +149,7 @@ public class NewsServiceImpl implements NewsService {
             resNews = newsRepository.saveAndFlush(oldNews);
             LOGGER.info("News with ID " + resNews.getId() + " was edited by admin");
         } else {
-            String error = "There is no such news in database with ID " + newsDTO.getId();
+            String error = environment.getProperty("error.search") + newsDTO.getId();
             LOGGER.error(error);
             throw new NotFoundException(error);
         }
@@ -166,7 +169,7 @@ public class NewsServiceImpl implements NewsService {
                 throw new LogicException(error);
             }
         } else {
-            String error = "No such news with ID " + newsId;
+            String error = environment.getProperty("error.search") + newsId;
             LOGGER.error(error);
             throw new NotFoundException(error);
         }
@@ -186,7 +189,7 @@ public class NewsServiceImpl implements NewsService {
             newsRepository.deleteById(newsId);
             LOGGER.info("Delete news with ID " + newsId);
         } else {
-            String error = "No such news with ID " + newsId;
+            String error = environment.getProperty("error.search") + newsId;
             LOGGER.error(error);
             throw new NotFoundException(error);
         }
