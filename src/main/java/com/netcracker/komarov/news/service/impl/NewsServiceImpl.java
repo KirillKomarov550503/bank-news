@@ -61,7 +61,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Transactional
     @Override
-    public Collection<NewsDTO> findAllNewsByClientId(long clientId) throws NotFoundException {
+    public Collection<NewsDTO> findAllNewsByClientId(long clientId) {
         List<News> resultCollection = clientNewsRepository.findAll()
                 .stream()
                 .filter(clientNews -> clientNews.getClientId() == clientId
@@ -160,20 +160,20 @@ public class NewsServiceImpl implements NewsService {
 
     @Transactional
     @Override
-    public NewsDTO findGeneralNewsById(long newsId) throws NotFoundException, LogicException {
+    public NewsDTO findGeneralNewsById(long newsId) throws LogicException {
         Optional<News> optionalNews = newsRepository.findById(newsId);
         News news;
         if (optionalNews.isPresent()) {
             news = optionalNews.get();
             if (news.getNewsStatus().equals(NewsStatus.CLIENT)) {
-                String error = "You do not have access to this news";
+                String error = environment.getProperty("error.forbidden");
                 LOGGER.error(error);
                 throw new LogicException(error);
             }
         } else {
-            String error = environment.getProperty("error.search") + newsId;
+            String error = environment.getProperty("error.forbidden");
             LOGGER.error(error);
-            throw new NotFoundException(error);
+            throw new LogicException(error);
         }
         LOGGER.info("Return news with ID " + newsId);
         return newsConverter.convertToDTO(news);

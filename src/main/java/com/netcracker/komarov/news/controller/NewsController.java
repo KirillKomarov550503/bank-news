@@ -40,7 +40,7 @@ public class NewsController {
             NewsDTO dto = newsService.save(newsDTO, adminId);
             responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(dto);
         } catch (ValidationException e) {
-            responseEntity = getBadRequestResponseEntity(e.getMessage());
+            responseEntity = getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
         return responseEntity;
     }
@@ -49,12 +49,8 @@ public class NewsController {
     @RequestMapping(value = "/clients/{clientId}/news", method = RequestMethod.GET)
     public ResponseEntity findAllNewsByClientId(@PathVariable long clientId) {
         ResponseEntity responseEntity;
-        try {
-            Collection<NewsDTO> dtos = newsService.findAllNewsByClientId(clientId);
-            responseEntity = ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
-        } catch (NotFoundException e) {
-            responseEntity = ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        Collection<NewsDTO> dtos = newsService.findAllNewsByClientId(clientId);
+        responseEntity = ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
         return responseEntity;
     }
 
@@ -72,10 +68,8 @@ public class NewsController {
         try {
             NewsDTO dto = newsService.findGeneralNewsById(newsId);
             responseEntity = ResponseEntity.status(HttpStatus.OK).body(dto);
-        } catch (NotFoundException e) {
-            responseEntity = getNotFoundResponseEntity(e.getMessage());
         } catch (LogicException e) {
-            responseEntity = ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            responseEntity = getErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
         }
         return responseEntity;
     }
@@ -88,7 +82,7 @@ public class NewsController {
             NewsDTO dto = newsService.findById(newsId);
             responseEntity = ResponseEntity.status(HttpStatus.OK).body(dto);
         } catch (NotFoundException e) {
-            responseEntity = getNotFoundResponseEntity(e.getMessage());
+            responseEntity = getErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
         }
         return responseEntity;
     }
@@ -102,7 +96,7 @@ public class NewsController {
             Collection<NewsDTO> dtos = newsService.findAllNewsBySpecification(params);
             responseEntity = ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
         } catch (ValidationException e) {
-            responseEntity = getBadRequestResponseEntity(e.getMessage());
+            responseEntity = getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
         return responseEntity;
     }
@@ -115,9 +109,9 @@ public class NewsController {
             NewsDTO dto = newsService.sendNewsToClient(clientIds, newsId);
             responseEntity = ResponseEntity.status(HttpStatus.CREATED).body(dto);
         } catch (NotFoundException e) {
-            responseEntity = getNotFoundResponseEntity(e.getMessage());
+            responseEntity = getErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (LogicException e) {
-            responseEntity = getInternalServerErrorResponseEntity(e.getMessage());
+            responseEntity = getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
         return responseEntity;
     }
@@ -132,9 +126,9 @@ public class NewsController {
             NewsDTO dto = newsService.update(requestNewsDTO);
             responseEntity = ResponseEntity.status(HttpStatus.OK).body(dto);
         } catch (NotFoundException e) {
-            responseEntity = getNotFoundResponseEntity(e.getMessage());
+            responseEntity = getErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
         } catch (ValidationException e) {
-            responseEntity = getBadRequestResponseEntity(e.getMessage());
+            responseEntity = getErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
         }
         return responseEntity;
     }
@@ -147,21 +141,13 @@ public class NewsController {
             newsService.deleteById(newsId);
             responseEntity = ResponseEntity.status(HttpStatus.OK).build();
         } catch (NotFoundException e) {
-            responseEntity = getNotFoundResponseEntity(e.getMessage());
+            responseEntity = getErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
         }
         return responseEntity;
     }
 
-    private ResponseEntity getNotFoundResponseEntity(String message) {
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(objectMapper.valueToTree(message));
-    }
-
-    private ResponseEntity getInternalServerErrorResponseEntity(String message) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(objectMapper.valueToTree(message));
-    }
-
-    private ResponseEntity getBadRequestResponseEntity(String message) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(objectMapper.valueToTree(message));
+    private ResponseEntity getErrorResponse(HttpStatus httpStatus, String message) {
+        return ResponseEntity.status(httpStatus).body(objectMapper.valueToTree(message));
     }
 
     private NewsDTO[] convertToArray(Collection<NewsDTO> dtos) {

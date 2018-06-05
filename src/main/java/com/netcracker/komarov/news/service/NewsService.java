@@ -4,7 +4,6 @@ import com.netcracker.komarov.news.dao.entity.NewsStatus;
 import com.netcracker.komarov.news.service.dto.entity.NewsDTO;
 import com.netcracker.komarov.news.service.exception.LogicException;
 import com.netcracker.komarov.news.service.exception.NotFoundException;
-import com.netcracker.komarov.news.service.exception.ValidationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -14,7 +13,7 @@ import java.util.Map;
 public interface NewsService {
     Collection<NewsDTO> findAllNewsBySpecification(Map<String, String> params);
 
-    Collection<NewsDTO> findAllNewsByClientId(long clientId) throws NotFoundException;
+    Collection<NewsDTO> findAllNewsByClientId(long clientId);
 
     NewsDTO findById(long newsId) throws NotFoundException;
 
@@ -28,7 +27,7 @@ public interface NewsService {
 
     NewsDTO update(NewsDTO newsDTO) throws NotFoundException;
 
-    NewsDTO findGeneralNewsById(long newsId) throws NotFoundException, LogicException;
+    NewsDTO findGeneralNewsById(long newsId) throws LogicException;
 
     void deleteById(long newsId) throws NotFoundException;
 }
