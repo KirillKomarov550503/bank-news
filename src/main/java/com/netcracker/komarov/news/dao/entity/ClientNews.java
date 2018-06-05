@@ -1,7 +1,5 @@
 package com.netcracker.komarov.news.dao.entity;
 
-import org.hibernate.annotations.Proxy;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -9,7 +7,6 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "client_news")
-@Proxy(lazy = false)
 public class ClientNews extends BaseEntity {
     @Column(name = "client_id")
     private long clientId;
