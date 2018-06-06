@@ -1,4 +1,4 @@
-package com.netcracker.komarov.news.validator;
+package com.netcracker.komarov.news.util.validator;
 
 import java.io.Serializable;
 

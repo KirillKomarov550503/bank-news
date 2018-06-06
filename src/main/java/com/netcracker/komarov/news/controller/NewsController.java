@@ -1,13 +1,13 @@
 package com.netcracker.komarov.news.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netcracker.komarov.news.ErrorJson;
 import com.netcracker.komarov.news.dao.entity.NewsStatus;
 import com.netcracker.komarov.news.service.NewsService;
 import com.netcracker.komarov.news.service.dto.entity.NewsDTO;
 import com.netcracker.komarov.news.service.exception.LogicException;
 import com.netcracker.komarov.news.service.exception.NotFoundException;
 import com.netcracker.komarov.news.service.exception.ValidationException;
-import com.netcracker.komarov.news.validator.impl.NewsValidator;
+import com.netcracker.komarov.news.util.validator.impl.NewsValidator;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -22,13 +22,13 @@ import java.util.Map;
 public class NewsController {
     private NewsService newsService;
     private NewsValidator newsValidator;
-    private ObjectMapper objectMapper;
+    private ErrorJson errorJson;
 
     @Autowired
-    public NewsController(NewsService newsService, NewsValidator newsValidator, ObjectMapper objectMapper) {
+    public NewsController(NewsService newsService, NewsValidator newsValidator, ErrorJson errorJson) {
         this.newsService = newsService;
         this.newsValidator = newsValidator;
-        this.objectMapper = objectMapper;
+        this.errorJson = errorJson;
     }
 
     @ApiOperation(value = "Create of new news")
@@ -148,7 +148,7 @@ public class NewsController {
     }
 
     private ResponseEntity getErrorResponse(HttpStatus httpStatus, String message) {
-        return ResponseEntity.status(httpStatus).body(objectMapper.valueToTree(message));
+        return ResponseEntity.status(httpStatus).body(errorJson.getErrorJson(message));
     }
 
     private NewsDTO[] convertToArray(Collection<NewsDTO> dtos) {

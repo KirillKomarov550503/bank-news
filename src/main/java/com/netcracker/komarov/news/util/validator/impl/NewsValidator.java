@@ -1,8 +1,8 @@
-package com.netcracker.komarov.news.validator.impl;
+package com.netcracker.komarov.news.util.validator.impl;
 
 import com.netcracker.komarov.news.service.dto.entity.NewsDTO;
 import com.netcracker.komarov.news.service.exception.ValidationException;
-import com.netcracker.komarov.news.validator.Validator;
+import com.netcracker.komarov.news.util.validator.Validator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
