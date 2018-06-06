@@ -92,7 +92,8 @@ public class NewsController {
     public ResponseEntity findNewsByParams(@RequestParam Map<String, String> params) {
         ResponseEntity responseEntity;
         try {
-            newsValidator.validateStatus(params.get("status"));
+
+            newsValidator.validateParams(params);
             Collection<NewsDTO> dtos = newsService.findAllNewsBySpecification(params);
             responseEntity = ResponseEntity.status(HttpStatus.OK).body(convertToArray(dtos));
         } catch (ValidationException e) {

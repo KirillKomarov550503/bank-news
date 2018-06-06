@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+
 @Component
 public class NewsValidator implements Validator<NewsDTO> {
     private static final Logger LOGGER = LoggerFactory.getLogger(NewsValidator.class);
@@ -31,7 +33,7 @@ public class NewsValidator implements Validator<NewsDTO> {
         validateStatus(newsDTO.getStatus());
     }
 
-    public void validateStatus(String status) throws ValidationException {
+    private void validateStatus(String status) throws ValidationException {
         if (status == null) {
             String error = "Unknown value for status";
             LOGGER.error(error);
@@ -46,7 +48,12 @@ public class NewsValidator implements Validator<NewsDTO> {
                 String error = "Unknown value for status";
                 LOGGER.error(error);
                 throw new ValidationException(error);
+        }
+    }
 
+    public void validateParams(Map<String, String> params) throws ValidationException {
+        if ("true".equals(params.get("filter"))) {
+            validateStatus(params.get("status"));
         }
     }
 }
