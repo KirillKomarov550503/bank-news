@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/microservice_bank_news
+    url: jdbc:postgresql://192.168.99.100:32768/microservice_bank_news
     driver-class-name: org.postgresql.Driver
     username: postgres
-    password: qwerty
+    password:
     platform: POSTGRESQL
   jpa:
     hibernate:
@@ -21,3 +21,7 @@ spring:
     name: bank-news
 server:
   port: 8082
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8090/eureka
